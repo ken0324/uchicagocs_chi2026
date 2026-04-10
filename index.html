@@ -23,7 +23,7 @@
   --accent:#8B1C1C; --gold:#c8961e;
   --pi-marshini:#e11d48; --pi-nick:#1d4ed8; --pi-blase:#7c3aed;
   --pi-ken:#ea580c;      --pi-pedro:#0891b2; --pi-alex:#16a34a;
-  --pi-mina:#d97706;     --pi-other:#778; --pi-uchi:#8B1C1C;
+  --pi-mina:#d97706;     --pi-other:#778; --pi-uchi:#8B1C1C; --pi-chenhao:#0f766e;
 }
 [data-theme="light"] {
   --bg:#f8f6f2; --bg-card:#fff; --bg-card2:#f2f0ec;
@@ -38,7 +38,7 @@
   --shadow:0 2px 12px rgba(0,0,0,.35); --shadow-hover:0 8px 32px rgba(0,0,0,.55);
   --pi-marshini:#fb7185; --pi-nick:#60a5fa; --pi-blase:#a78bfa;
   --pi-ken:#fb923c;      --pi-pedro:#22d3ee; --pi-alex:#4ade80;
-  --pi-mina:#fbbf24;     --pi-other:#8890a8; --pi-uchi:#e05555;
+  --pi-mina:#fbbf24;     --pi-other:#8890a8; --pi-uchi:#e05555; --pi-chenhao:#2dd4bf;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Source Serif 4',Georgia,serif;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;}
@@ -283,11 +283,12 @@ const piInfo = {
   "Pedro":   { lab:"Human-Computer Integration Lab", full:"Pedro Lopes", short:"P. Lopes", url:"http://lab.plopes.org/" },
   "Alex":    { lab:"Data Cognition Lab", full:"Alex Kale", short:"A. Kale", url:"https://people.cs.uchicago.edu/~kalea/dcl-website/index.html" },
   "Mina":    { lab:"AI & Me (AIM) Group", full:"Mina Lee", short:"M. Lee", url:"https://minalee-research.github.io/research.html" },
+  "Chenhao": { lab:"Chicago Human + AI (CHAI) Lab", full:"Chenhao Tan", short:"C. Tan", url:"https://chicagohai.github.io/" },
 };
 const piColorVar = {
   "Marshini":"var(--pi-marshini)","Nick":"var(--pi-nick)","Blase":"var(--pi-blase)",
   "Ken":"var(--pi-ken)","Pedro":"var(--pi-pedro)","Alex":"var(--pi-alex)",
-  "Mina":"var(--pi-mina)","":"var(--pi-uchi)"
+  "Mina":"var(--pi-mina)","":"var(--pi-uchi)","Chenhao":"var(--pi-chenhao)"
 };
 const typeShort = {
   "Full-Paper (Talk)":"Full Paper","Interactivity (Demo)":"Demo",
@@ -319,7 +320,7 @@ const raw = [
     slots:[{session:"Video Presentations (Papers)",cs:"2026-04-13 11:15",ce:"2026-04-13 11:27"}]},
   {type:"Full-Paper (Talk)",title:"A Systematic Review of User Experiments on the Effects of Dark Patterns",authors:"Brennan Schaffner (Georgetown University), Luis Heysen, Marshini Chetty",pi:"Marshini",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222694",paperUrl:"https://www.marshini.net/_files/ugd/15c022_336085bdf00349be8fef4d7617600bcb.pdf",
     slots:[{session:"Dark Patterns, Deception, and Manipulative Interfaces",cs:"2026-04-16 10:00",ce:"2026-04-16 10:12"}]},
-  {type:"Full-Paper (Talk)",title:"Governance of AI-Generated Content: A Case Study on Social Media Platforms",authors:"Lan Gao, Abani Ahmed, Oscar Chen, Margaux Reyl, Zayna Cheema, Nick Feamster, Chenhao Tan, Kurt Thomas (Google), Marshini Chetty",pi:"Marshini",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222058",paperUrl:"https://arxiv.org/pdf/2603.07814",
+  {type:"Full-Paper (Talk)",title:"Governance of AI-Generated Content: A Case Study on Social Media Platforms",authors:"Lan Gao, Abani Ahmed, Oscar Chen, Margaux Reyl, Zayna Cheema, Nick Feamster, Chenhao Tan, Kurt Thomas (Google), Marshini Chetty",pi:"Marshini",pis:["Marshini","Nick","Chenhao"],award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222058",paperUrl:"https://arxiv.org/pdf/2603.07814",
     slots:[{session:"Video Presentations (Papers)",cs:"2026-04-13 11:15",ce:"2026-04-13 11:27"}]},
   {type:"Full-Paper (Talk)",title:"Beyond PII: How Users Attempt to Estimate and Mitigate Implicit LLM Inference",authors:"Synthia Qia Wang, Sai Teja Peddinti (Google Inc.), Nina Taft (Google), Nick Feamster",pi:"Nick",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/223234",paperUrl:"https://arxiv.org/pdf/2509.12152",
     slots:[{session:"Video Presentations (Papers)",cs:"2026-04-13 11:15",ce:"2026-04-13 11:27"}]},
@@ -453,11 +454,14 @@ document.getElementById('themeToggle').addEventListener('click',()=>{
 document.getElementById('s-total').textContent=raw.length;
 document.getElementById('s-full').textContent=raw.filter(p=>p.type==="Full-Paper (Talk)").length;
 document.getElementById('s-best').textContent=raw.filter(p=>p.award).length;
-document.getElementById('s-pis').textContent=new Set(raw.map(p=>p.pi).filter(Boolean)).size;
+document.getElementById('s-pis').textContent=new Set([...raw.map(p=>p.pi).filter(Boolean),...raw.flatMap(p=>p.pis||[])]).size;
 
 // Filters
 let activePI=null,activeType=null;
-const allPIs=[...new Set(raw.map(p=>p.pi).filter(Boolean))].sort();
+const allPIs=[...new Set([
+  ...raw.map(p=>p.pi).filter(Boolean),
+  ...raw.flatMap(p=>p.pis||[])
+])].sort();
 const allTypes=[...new Set(raw.map(p=>p.type))];
 const piFiltersEl=document.getElementById('pi-filters');
 allPIs.forEach(pi=>{
@@ -475,7 +479,11 @@ allTypes.forEach(t=>{
 
 
 function matches(p){
-  if(activePI&&p.pi!==activePI)return false;
+  if(activePI){
+    const inPrimary = p.pi===activePI;
+    const inMulti = p.pis && p.pis.includes(activePI);
+    if(!inPrimary && !inMulti) return false;
+  }
   if(activeType&&p.type!==activeType)return false;
   return true;
 }
@@ -505,14 +513,47 @@ function splitAuthors(str){
   if(cur.trim())parts.push(cur.trim());
   return parts;
 }
-function authorHTML(authors,pi){
-  const cvar=piColorVar[pi]||piColorVar[''];
-  return splitAuthors(authors).map(a=>a.includes('(')?`<span>${a}</span>`:`<span class="uc" style="color:${cvar}">${a}</span>`).join(', ');
+// For multi-PI papers: map specific author name fragments to their PI key
+const multiPIAuthorMap = {
+  "Feamster": "Nick",
+  "Chenhao Tan": "Chenhao",
+  "Chetty": "Marshini",
+};
+
+function authorHTML(authors, pi, pis){
+  const isMultiPI = pis && pis.length > 1;
+  const defaultColor = piColorVar[pi] || piColorVar[''];
+  return splitAuthors(authors).map(a => {
+    if(a.includes('(')) return `<span>${a}</span>`;
+    if(isMultiPI){
+      for(const [frag, piKey] of Object.entries(multiPIAuthorMap)){
+        if(a.includes(frag)) return `<span class="uc" style="color:${piColorVar[piKey]}">${a}</span>`;
+      }
+    }
+    return `<span class="uc" style="color:${defaultColor}">${a}</span>`;
+  }).join(', ');
 }
-function labTagHTML(pi){
-  if(!pi)return`<div class="lab-tag"><span class="lab-dot" style="background:${piColorVar['']}"></span><span class="lab-pi">UChicago CS</span></div>`;
-  const info=piInfo[pi];const cvar=piColorVar[pi];
-  return`<div class="lab-tag"><span class="lab-dot" style="background:${cvar}"></span><div><div class="lab-name">${info.lab}</div><div class="lab-pi">${info.short}</div></div></div>`;
+function labTagHTML(pi, pis){
+  const piList = (pis && pis.length) ? pis : (pi ? [pi] : []);
+  if(!piList.length){
+    return `<div class="lab-tag"><span class="lab-dot" style="background:${piColorVar['']}"></span><span class="lab-pi">UChicago CS</span></div>`;
+  }
+  if(piList.length === 1){
+    const info = piInfo[piList[0]]; const cvar = piColorVar[piList[0]];
+    return `<div class="lab-tag"><span class="lab-dot" style="background:${cvar}"></span><div><div class="lab-name">${info.lab}</div><div class="lab-pi">${info.short}</div></div></div>`;
+  }
+  // Multiple labs
+  const rows = piList.map(key => {
+    const info = piInfo[key]; const cvar = piColorVar[key];
+    return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+      <span class="lab-dot" style="background:${cvar};flex-shrink:0"></span>
+      <div>
+        <div class="lab-name" style="font-size:10px">${info.lab}</div>
+        <div class="lab-pi" style="font-size:9px">${info.short}</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div style="display:flex;flex-direction:column;align-items:flex-start">${rows}</div>`;
 }
 
 // ── CARDS ─────────────────────────────────────────────────────────────────────
@@ -544,8 +585,8 @@ function makeCard(p,idx){
     <div class="card-title">${p.title}</div>
     ${multiSlot?`<div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:4px"><span style="color:var(--text-muted)">Session:</span> ${p.slots[0].session}${p.slots.length>1?' <em style="opacity:.6">(+'+(p.slots.length-1)+' more)</em>':''}</div>`:''}
     ${slotsHTML}
-    <div class="card-authors">${authorHTML(p.authors,p.pi)}</div>
-    <div class="card-footer">${labTagHTML(p.pi)}<div style="display:flex;gap:10px;align-items:center;flex-shrink:0">${p.paperUrl?`<a href="${p.paperUrl}" target="_blank" class="card-link">PDF ↗</a>`:''}<a href="${p.url}" target="_blank" class="card-link">SIGCHI ↗</a></div></div>`;
+    <div class="card-authors">${authorHTML(p.authors,p.pi,p.pis)}</div>
+    <div class="card-footer">${labTagHTML(p.pi,p.pis)}<div style="display:flex;gap:10px;align-items:center;flex-shrink:0">${p.paperUrl?`<a href="${p.paperUrl}" target="_blank" class="card-link">PDF ↗</a>`:''}<a href="${p.url}" target="_blank" class="card-link">SIGCHI ↗</a></div></div>`;
   return el;
 }
 function renderCards(){
@@ -558,7 +599,10 @@ function renderCards(){
 function renderPIView(){
   const c=document.getElementById('pi-view');
   allPIs.forEach(pi=>{
-    const papers=raw.map((p,i)=>({...p,origIdx:i})).filter(p=>p.pi===pi);
+    // Include paper if pi is the primary PI OR appears in the pis array
+    const papers=raw.map((p,i)=>({...p,origIdx:i})).filter(p=>
+      p.pi===pi || (p.pis && p.pis.includes(pi))
+    );
     const cvar=piColorVar[pi];const info=piInfo[pi];
     const nFull=papers.filter(p=>p.type==="Full-Paper (Talk)").length;
     const nOther=papers.length-nFull;
@@ -584,6 +628,7 @@ function renderPIView(){
     c.appendChild(sec);
     const tbl=document.getElementById('pub-tbl-'+pi);
     papers.forEach(p=>{
+      const isGuest = p.pis && p.pis.length>1 && p.pi!==pi; // showing under a secondary PI
       const cvar2=piColorVar[p.pi]||piColorVar[''];
       const row=document.createElement('div');row.className='pub-row';row.dataset.idx=p.origIdx;
       // Time column: one entry per slot
@@ -603,9 +648,11 @@ function renderPIView(){
         </div>
         <div class="pub-cell pub-col-main">
           ${p.award?`<div class="pub-award">🏆 ${p.award}</div>`:''}
+          ${isGuest?`<div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--text-muted);margin-bottom:3px">↔ Cross-lab collaboration</div>`:''}
           <div class="pub-title">${p.title}</div>
           <div class="pub-session-txt"><span style="opacity:.6">Session:</span> ${p.slots[0].session}</div>
-          <div class="pub-authors-txt">${authorHTML(p.authors,p.pi)}</div>
+          ${p.pis&&p.pis.length>1?`<div style="font-family:'Space Mono',monospace;font-size:9px;margin-top:3px;display:flex;gap:6px;flex-wrap:wrap">${p.pis.map(pid=>`<span style="color:${piColorVar[pid]};font-weight:700">${piInfo[pid].lab}</span>`).join('<span style="color:var(--text-muted)">×</span>')}</div>`:''}
+          <div class="pub-authors-txt">${authorHTML(p.authors,p.pi,p.pis)}</div>
         </div>
         <div class="pub-cell pub-col-time">${timeCellHTML}</div>
         <div class="pub-cell pub-col-link" style="width:80px">${p.paperUrl?`<a href="${p.paperUrl}" target="_blank" class="card-link" style="font-size:10px;display:block;margin-bottom:4px">PDF ↗</a>`:''}<a href="${p.url}" target="_blank" class="card-link" style="font-size:10px">SIGCHI ↗</a></div>`;
@@ -701,7 +748,7 @@ document.querySelectorAll('.view-btn').forEach(btn=>{
     currentView=v;
     document.getElementById(v+'-view').style.display='block';
     // Show filters only for cards view
-    document.getElementById('controls').style.display=v==='cards'?'flex':'none';
+    document.getElementById('controls').style.display='flex';
   });
 });
 
