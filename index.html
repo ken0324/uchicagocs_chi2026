@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UChicago CS @ CHI 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:wght@600;700;800&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent:#8B1C1C; --gold:#c8961e;
+  --pi-marshini:#e11d48; --pi-nick:#1d4ed8; --pi-blase:#7c3aed;
+  --pi-ken:#ea580c;      --pi-pedro:#0891b2; --pi-alex:#16a34a;
+  --pi-mina:#d97706;     --pi-other:#778; --pi-uchi:#8B1C1C;
+}
+[data-theme="light"] {
+  --bg:#f8f6f2; --bg-card:#fff; --bg-card2:#f2f0ec;
+  --border:rgba(0,0,0,.09); --border-mid:rgba(0,0,0,.16);
+  --text:#1a1614; --text-muted:#6b6460; --chip-bg:rgba(0,0,0,.04);
+  --shadow:0 2px 12px rgba(0,0,0,.07); --shadow-hover:0 6px 24px rgba(0,0,0,.13);
+}
+[data-theme="dark"] {
+  --bg:#080c18; --bg-card:rgba(255,255,255,.035); --bg-card2:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.08); --border-mid:rgba(255,255,255,.16);
+  --text:#e8e4e0; --text-muted:#707898; --chip-bg:rgba(255,255,255,.04);
+  --shadow:0 2px 12px rgba(0,0,0,.35); --shadow-hover:0 8px 32px rgba(0,0,0,.55);
+  --pi-marshini:#fb7185; --pi-nick:#60a5fa; --pi-blase:#a78bfa;
+  --pi-ken:#fb923c;      --pi-pedro:#22d3ee; --pi-alex:#4ade80;
+  --pi-mina:#fbbf24;     --pi-other:#8890a8; --pi-uchi:#e05555;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Source Serif 4',Georgia,serif;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;}
+
+#starfield{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+[data-theme="light"] #starfield{display:none;}
+.star{position:absolute;border-radius:50%;background:white;opacity:0;animation:twinkle var(--d,4s) var(--delay,0s) infinite ease-in-out;}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--max-op,.4)}}
+
+header{position:relative;z-index:10;padding:36px 48px 28px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;border-bottom:1px solid var(--border);}
+.conf-eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.conf-eyebrow a{color:inherit;text-decoration:none;}
+.conf-eyebrow a:hover{text-decoration:underline;}
+h1{font-size:clamp(28px,4vw,48px);font-weight:700;line-height:1.05;letter-spacing:-.01em;font-family:'Playfair Display',Georgia,serif;}
+h1 em{font-style:normal;color:var(--text-muted);font-weight:600;}
+.subtitle{margin-top:8px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.subtitle a{color:var(--accent);text-decoration:none;}
+.subtitle a:hover{text-decoration:underline;}
+[data-theme="dark"] #uchi-logo{filter:brightness(0) invert(1);}
+/* Theme toggle */
+.theme-toggle{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);cursor:pointer;border:1px solid var(--border);border-radius:999px;padding:6px 14px;background:var(--chip-bg);transition:all .18s;user-select:none;}
+.theme-toggle:hover{border-color:var(--border-mid);color:var(--text);}
+.toggle-track{width:32px;height:18px;border-radius:9px;background:var(--border-mid);position:relative;transition:background .25s;}
+[data-theme="dark"] .toggle-track{background:var(--accent);}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:white;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+[data-theme="dark"] .toggle-thumb{transform:translateX(14px);}
+/* Theme toggle */
+.theme-toggle{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);cursor:pointer;border:1px solid var(--border);border-radius:999px;padding:6px 14px;background:var(--chip-bg);transition:all .18s;user-select:none;}
+.theme-toggle:hover{border-color:var(--border-mid);color:var(--text);}
+.toggle-track{width:32px;height:18px;border-radius:9px;background:var(--border-mid);position:relative;transition:background .25s;}
+[data-theme="dark"] .toggle-track{background:var(--accent);}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:white;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+[data-theme="dark"] .toggle-thumb{transform:translateX(14px);}
+
+.stats-bar{position:relative;z-index:10;display:flex;flex-wrap:wrap;margin:0 48px;border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;overflow:hidden;background:var(--bg-card);box-shadow:var(--shadow);transition:background .3s;}
+.stat{flex:1;min-width:100px;padding:15px 20px;border-right:1px solid var(--border);transition:background .18s;}
+.stat:last-child{border-right:none;}
+.stat:hover{background:var(--bg-card2);}
+.stat-num{font-size:26px;font-weight:700;line-height:1;font-family:'Playfair Display',Georgia,serif;}
+.stat-num.accent{color:var(--gold);}
+.stat-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-top:3px;}
+
+.controls{position:relative;z-index:10;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 48px 0;}
+.filter-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);flex-shrink:0;}
+.filter-group{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;border:1px solid var(--border);background:var(--chip-bg);cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);transition:all .16s;user-select:none;}
+.chip .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.chip:hover{border-color:var(--border-mid);color:var(--text);}
+.chip.active{color:var(--text);font-weight:700;border-color:currentColor;background:var(--bg-card2);}
+.vdivider{width:1px;height:22px;background:var(--border);margin:0 2px;flex-shrink:0;}
+
+
+.main{position:relative;z-index:10;padding:24px 48px 60px;}
+.view-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content;margin-bottom:22px;background:var(--bg-card);}
+.view-btn{padding:8px 18px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.07em;text-transform:uppercase;border:none;cursor:pointer;background:transparent;color:var(--text-muted);border-right:1px solid var(--border);transition:all .16s;}
+.view-btn:last-child{border-right:none;}
+.view-btn.active{background:var(--accent);color:#fff;}
+.view-btn:hover:not(.active){background:var(--bg-card2);color:var(--text);}
+
+/* ── CARDS ──────────────────────────────────────────────────────── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;transition:all .2s;position:relative;overflow:hidden;box-shadow:var(--shadow);}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--pi-color,var(--pi-other));opacity:.8;}
+.card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:var(--border-mid);}
+.card:hover::before{opacity:1;}
+.card.hidden{display:none;}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px;gap:8px;flex-wrap:wrap;}
+.tag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;border-radius:4px;padding:3px 7px;white-space:nowrap;border:1px solid var(--border);color:var(--text-muted);background:var(--bg-card2);}
+.tag-full{font-weight:700;color:var(--text);border-color:var(--border-mid);}
+.tag-award{background:rgba(200,150,30,.1);border-color:rgba(200,150,30,.4);color:var(--gold);}
+.card-title{font-size:14px;font-weight:600;line-height:1.5;margin-bottom:7px;font-family:'Source Serif 4',Georgia,serif;}
+.card-session{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:4px;display:flex;align-items:flex-start;gap:5px;}
+.session-dot{color:var(--pi-color,var(--pi-other));flex-shrink:0;margin-top:1px;}
+/* Multi-slot chips on card */
+.card-slots{display:flex;flex-direction:column;gap:3px;margin-bottom:9px;}
+.slot-chip{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);display:flex;align-items:center;gap:6px;}
+.slot-chip .sc-day{font-weight:700;color:var(--text);opacity:.75;}
+.card-authors{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.65;margin-bottom:10px;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);gap:8px;}
+.lab-tag{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:10px;line-height:1.3;min-width:0;}
+.lab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.lab-name{color:var(--text);font-weight:700;}
+.lab-pi{color:var(--text-muted);}
+.card-link{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);text-decoration:none;flex-shrink:0;transition:color .15s;}
+.card-link:hover{color:var(--text);}
+.no-results{grid-column:1/-1;text-align:center;padding:60px 20px;font-family:'Space Mono',monospace;color:var(--text-muted);font-size:12px;}
+
+/* ── BY LAB ─────────────────────────────────────────────────────── */
+#pi-view{display:none;}
+.pi-section{margin-bottom:32px;}
+.pi-section.hidden{display:none;}
+.pi-header{display:flex;align-items:stretch;overflow:hidden;background:var(--bg-card);border:1px solid var(--border);border-radius:12px 12px 0 0;box-shadow:var(--shadow);}
+.pi-header-accent{width:6px;flex-shrink:0;}
+.pi-header-body{padding:14px 20px;flex:1;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.pi-lab-name{font-size:17px;font-weight:700;line-height:1.15;font-family:'Playfair Display',Georgia,serif;}
+.pi-lab-name a{color:inherit;text-decoration:none;}
+.pi-lab-name a:hover{text-decoration:underline;}
+.pi-full-name{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:4px;}
+.pi-badges{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;}
+.pi-badge{font-family:'Space Mono',monospace;font-size:10px;padding:3px 10px;border-radius:999px;border:1px solid var(--border);color:var(--text-muted);white-space:nowrap;background:var(--bg-card2);}
+.pi-badge.is-full{font-weight:700;color:var(--text);border-color:var(--border-mid);}
+.pi-badge.is-award{background:rgba(200,150,30,.1);border-color:rgba(200,150,30,.4);color:var(--gold);}
+.pub-table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;overflow:hidden;background:var(--bg-card);box-shadow:var(--shadow);display:table;}
+.pub-row{display:table-row;transition:background .15s;}
+.pub-row:last-child .pub-cell{border-bottom:none;}
+.pub-row:hover .pub-cell{background:var(--bg-card2);}
+.pub-row.hidden{display:none;}
+.pub-cell{display:table-cell;vertical-align:top;border-bottom:1px solid var(--border);}
+.pub-col-type{width:96px;padding:13px 8px 13px 18px;}
+.pub-col-main{padding:13px 12px;}
+.pub-col-time{width:140px;padding:13px 10px;}
+.pub-col-link{width:60px;padding:13px 16px 13px 4px;text-align:right;}
+.pub-title{font-size:13px;font-weight:600;line-height:1.45;font-family:'Source Serif 4',Georgia,serif;margin-bottom:4px;}
+.pub-session-txt{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:3px;}
+.pub-authors-txt{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.55;}
+.pub-authors-txt .uc{font-weight:700;}
+.pub-award{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:4px;}
+/* Multi-slot in By Lab time col */
+.pub-slot{display:flex;flex-direction:column;gap:1px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.pub-slot:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+.pub-slot-day{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--text);opacity:.75;}
+.pub-slot-time{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);}
+.pub-slot-sess{font-family:'Space Mono',monospace;font-size:9px;color:var(--text-muted);opacity:.75;margin-top:1px;}
+
+/* ── SCHEDULE ────────────────────────────────────────────────────── */
+#schedule-view{display:none;}
+.day-block{margin-bottom:40px;}
+.day-block.hidden{display:none;}
+.day-header{display:flex;align-items:baseline;gap:14px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--border);}
+.day-name{font-size:26px;font-weight:700;font-family:'Playfair Display',Georgia,serif;}
+.day-date{font-family:'Space Mono',monospace;font-size:12px;color:var(--text-muted);}
+.day-count{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--bg-card);border:1px solid var(--border);border-radius:999px;padding:2px 10px;margin-left:auto;}
+.session-block{margin-bottom:14px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg-card);box-shadow:var(--shadow);}
+.session-block.all-hidden{display:none;}
+.session-head{display:flex;align-items:center;gap:12px;padding:9px 16px;background:var(--bg-card2);border-bottom:1px solid var(--border);}
+.session-head-time{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--text-muted);white-space:nowrap;flex-shrink:0;}
+.session-head-name{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--text);letter-spacing:.04em;flex:1;}
+.session-head-name.is-secondary{color:var(--text-muted);font-weight:400;}
+.session-head-count{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);}
+.sched-row{display:flex;align-items:stretch;border-bottom:1px solid var(--border);transition:background .15s;}
+.sched-row:last-child{border-bottom:none;}
+.sched-row:hover{background:var(--bg-card2);}
+.sched-row.hidden{display:none;}
+.sched-accent{width:4px;flex-shrink:0;}
+.sched-body{flex:1;padding:11px 14px 11px 12px;min-width:0;}
+.sched-right{width:84px;flex-shrink:0;padding:11px 14px 11px 0;text-align:right;display:flex;flex-direction:column;justify-content:flex-start;gap:2px;}
+.sched-title{font-size:13px;font-weight:600;line-height:1.4;font-family:'Source Serif 4',Georgia,serif;margin-bottom:5px;}
+.sched-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.sched-award{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);}
+.mini-pi{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);display:flex;align-items:center;gap:4px;}
+.mini-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.sched-link{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);text-decoration:none;}
+.sched-link:hover{color:var(--text);}
+.sched-time-main{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--text);opacity:.7;}
+.sched-time-end{font-family:'Space Mono',monospace;font-size:9px;color:var(--text-muted);}
+
+[data-theme="dark"] #uchi-logo { filter: brightness(0) invert(1); }
+.day-nav-btn{font-family:'Space Mono',monospace;font-size:11px;padding:5px 14px;border-radius:999px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);cursor:pointer;text-decoration:none;transition:all .16s;display:inline-block;}
+.day-nav-btn:hover{border-color:var(--border-mid);color:var(--text);background:var(--bg-card2);}
+
+/* Tooltip */
+#tooltip{position:fixed;z-index:1000;background:var(--bg-card);border:1px solid var(--border-mid);border-radius:10px;padding:12px 14px;max-width:300px;pointer-events:none;opacity:0;transition:opacity .12s;font-size:12px;box-shadow:var(--shadow-hover);}
+#tooltip.visible{opacity:1;}
+.tt-type{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px;}
+.tt-title{font-weight:700;line-height:1.4;margin-bottom:5px;font-family:'Source Serif 4',Georgia,serif;}
+.tt-meta{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);}
+
+@media(max-width:700px){header,.stats-bar,.controls,.main{padding-left:20px;padding-right:20px;}.stats-bar{margin-left:20px;margin-right:20px;}}
+</style>
+</head>
+<body>
+<div id="starfield"></div>
+
+<header>
+  <div>
+    <div class="conf-eyebrow"><span>◈</span><a href="https://chi2026.acm.org/" target="_blank">ACM CHI 2026</a><span>·</span><span>Barcelona, Spain · Apr 13–17</span></div>
+    <h1>UChicago CS <em>at</em> CHI 2026</h1>
+    <div class="subtitle"><a href="https://cs.uchicago.edu/research/human-computer-interaction/" target="_blank">UChicago HCI Research ↗</a><span style="color:var(--border-mid)">·</span><span>Department of Computer Science</span></div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:2px">
+    <div class="theme-toggle" id="themeToggle"><span id="toggleLabel">Dark mode</span><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+    <a href="https://cs.uchicago.edu/" target="_blank">
+      <img id="uchi-logo" src="UChicago_Computer Science_Horizontal_Color RGB.png"
+        alt="UChicago Computer Science" style="height:52px;width:auto;display:block;">
+    </a>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num" id="s-total">–</div><div class="stat-label">Total Items</div></div>
+  <div class="stat"><div class="stat-num" id="s-full">–</div><div class="stat-label">Full Papers</div></div>
+  <div class="stat"><div class="stat-num accent" id="s-best">–</div><div class="stat-label">🏆 Best Papers</div></div>
+  <div class="stat"><div class="stat-num" id="s-pis">–</div><div class="stat-label">PI Labs</div></div>
+
+</div>
+
+<div class="controls" id="controls">
+  <span class="filter-label">PI</span>
+  <div class="filter-group" id="pi-filters"></div>
+  <div class="vdivider"></div>
+  <span class="filter-label">Type</span>
+  <div class="filter-group" id="type-filters"></div>
+
+</div>
+
+<div class="main">
+  <div class="view-toggle">
+    <button class="view-btn active" data-view="cards">Cards</button>
+    <button class="view-btn" data-view="pi">By Lab</button>
+    <button class="view-btn" data-view="schedule">Schedule</button>
+  </div>
+  <div id="cards-view"><div class="cards-grid" id="cards-grid"></div></div>
+  <div id="pi-view"></div>
+  <div id="schedule-view">
+    <div id="day-nav" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;"></div>
+  </div>
+</div>
+
+<div id="tooltip"><div class="tt-type" id="tt-type"></div><div class="tt-title" id="tt-title"></div><div class="tt-meta" id="tt-meta"></div></div>
+
+<script>
+const piInfo = {
+  "Marshini":{ lab:"Amyoli Internet Research (AIR) Lab", full:"Marshini Chetty", short:"M. Chetty", url:"https://airlab.cs.uchicago.edu/" },
+  "Nick":    { lab:"Network Operations & Internet Security (NOISE) Lab", full:"Nick Feamster", short:"N. Feamster", url:"https://noise.cs.uchicago.edu/" },
+  "Blase":   { lab:"SUPER Group", full:"Blase Ur", short:"B. Ur", url:"https://super.cs.uchicago.edu/" },
+  "Ken":     { lab:"AxLab – Actuated Experience Lab", full:"Ken Nakagaki", short:"K. Nakagaki", url:"https://www.axlab.cs.uchicago.edu/" },
+  "Pedro":   { lab:"Human-Computer Integration Lab", full:"Pedro Lopes", short:"P. Lopes", url:"http://lab.plopes.org/" },
+  "Alex":    { lab:"Data Cognition Lab", full:"Alex Kale", short:"A. Kale", url:"https://people.cs.uchicago.edu/~kalea/dcl-website/index.html" },
+  "Mina":    { lab:"AI & Me (AIM) Group", full:"Mina Lee", short:"M. Lee", url:"https://minalee-research.github.io/research.html" },
+};
+const piColorVar = {
+  "Marshini":"var(--pi-marshini)","Nick":"var(--pi-nick)","Blase":"var(--pi-blase)",
+  "Ken":"var(--pi-ken)","Pedro":"var(--pi-pedro)","Alex":"var(--pi-alex)",
+  "Mina":"var(--pi-mina)","":"var(--pi-uchi)"
+};
+const typeShort = {
+  "Full-Paper (Talk)":"Full Paper","Interactivity (Demo)":"Demo",
+  "Workshop":"Workshop","Posters":"Poster","Meet-Up":"Meet-Up"
+};
+const DAYS=['2026-04-13','2026-04-14','2026-04-15','2026-04-16','2026-04-17'];
+const DAY_NAMES=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+const DAY_LABELS=['Mon Apr 13','Tue Apr 14','Wed Apr 15','Thu Apr 16','Fri Apr 17'];
+
+function parseDT(s){
+  if(!s)return{dayKey:'',time:'',sortMin:0,dayLabel:'',dayIdx:-1};
+  const m=s.match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/);
+  if(!m)return{dayKey:'',time:'',sortMin:0,dayLabel:'',dayIdx:-1};
+  const[,dk,t]=m;const idx=DAYS.indexOf(dk);const[h,mn]=t.split(':').map(Number);
+  return{dayKey:dk,time:t,sortMin:h*60+mn,dayLabel:idx>=0?DAY_LABELS[idx]:dk,dayIdx:idx};
+}
+function slotTimeRange(slot){
+  const s=parseDT(slot.cs),e=parseDT(slot.ce);
+  if(!s.time)return'';
+  if(!e.time||s.time===e.time)return s.time;
+  return`${s.time}–${e.time}`;
+}
+
+// ── DATA: each paper has a slots[] array for multiple timeslots ───────────────
+// slots: [{session, cs, ce}, ...]
+const raw = [
+  // Full Papers
+  {type:"Full-Paper (Talk)",title:"Water On My Block: Reflections on Building A Participatory Artificial Intelligence System For Precision Weather With Scientists and An Urban Community",authors:"Kelly B. Wagman, Kanchan Uday Naik, Madison Vanderbilt, Naeun Ko, John Rugemalila, Thomas Chang, Marshini Chetty",pi:"Marshini",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222283",
+    slots:[{session:"Video Presentations (Papers)",cs:"2026-04-13 11:15",ce:"2026-04-13 11:27"}]},
+  {type:"Full-Paper (Talk)",title:"A Systematic Review of User Experiments on the Effects of Dark Patterns",authors:"Brennan Schaffner (Georgetown University), Luis Heysen, Marshini Chetty",pi:"Marshini",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222694",
+    slots:[{session:"Dark Patterns, Deception, and Manipulative Interfaces",cs:"2026-04-16 10:00",ce:"2026-04-16 10:12"}]},
+  {type:"Full-Paper (Talk)",title:"Governance of AI-Generated Content: A Case Study on Social Media Platforms",authors:"Lan Gao, Abani Ahmed, Oscar Chen, Margaux Reyl, Zayna Cheema, Nick Feamster, Chenhao Tan, Kurt Thomas (Google), Marshini Chetty",pi:"Marshini",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222058",
+    slots:[{session:"Video Presentations (Papers)",cs:"2026-04-13 11:15",ce:"2026-04-13 11:27"}]},
+  {type:"Full-Paper (Talk)",title:"Beyond PII: How Users Attempt to Estimate and Mitigate Implicit LLM Inference",authors:"Synthia Qia Wang, Sai Teja Peddinti (Google Inc.), Nina Taft (Google), Nick Feamster",pi:"Nick",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/223234",
+    slots:[{session:"Video Presentations (Papers)",cs:"2026-04-13 11:15",ce:"2026-04-13 11:27"}]},
+  {type:"Full-Paper (Talk)",title:"Depictions of Privacy Invasion and Surveillance in Artworks and Potential Lessons For Privacy Communication",authors:"Tess Eschebach, Emma I. C. Peterson, Nathaniel Kim, Bingning Liu, Marc Downie, Douglas Pancoast (School of the Art Institute of Chicago), Blase Ur",pi:"Blase",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222968",
+    slots:[{session:"Enabling Private & Smart Architectures and Spaces",cs:"2026-04-17 09:48",ce:"2026-04-17 10:00"}]},
+  {type:"Full-Paper (Talk)",title:"BloomBeacon: Blooming Physical Touch Display Surfaces via Persistence-of-Vision Motion",authors:"Willa Yunqi Yang, Justice T Andersen, David Dajun Yuan, Ken Nakagaki",pi:"Ken",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222847",
+    slots:[{session:"Haptic, Touch, and Physical Display",cs:"2026-04-15 11:15",ce:"2026-04-15 11:27"}]},
+  {type:"Full-Paper (Talk)",title:"Attention Nooks: Situated Frictions to Foster Intentional Technology Use",authors:"Anup Sathya, Ken Nakagaki",pi:"Ken",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/223332",
+    slots:[{session:"Methods, Reviews & Ethical Futures",cs:"2026-04-15 09:36",ce:"2026-04-15 09:48"}]},
+  {type:"Full-Paper (Talk)",title:"Exploring Texture-Level Creative Decisions with penPal, a Novel Handheld Actuated Drawing Tool",authors:"Tucker Rae-Grant, Luke Jimenez, Lea Albaugh (Carnegie Mellon University), Ken Nakagaki",pi:"Ken",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/223074",
+    slots:[{session:"Tangible Interfaces for Electronics, PCBs, and Physical Computing",cs:"2026-04-15 12:15",ce:"2026-04-15 12:27"}]},
+  {type:"Full-Paper (Talk)",title:"Generative Muscle Stimulation: Providing Users with Physical Assistance by Constraining Multimodal-AI with Embodied Knowledge",authors:"Yun Ho, Romain Nith, Peili Jiang, Steven He, Bruno Felalaga, Shan-Yuan Teng, Rhea Seeralan, Pedro Lopes",pi:"Pedro",award:"Best Paper",url:"https://programs.sigchi.org/chi/2026/program/content/223492",
+    slots:[{session:"Electrical Stimulation",cs:"2026-04-16 09:00",ce:"2026-04-16 09:12"}]},
+  {type:"Full-Paper (Talk)",title:"Increasing Input Accuracy of Embodied Devices via Electrical Muscle Stimulation",authors:"Lonnie Chien, Yudai Tanaka, Noor Amin, Jas Brooks, Pedro Lopes",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/223457",
+    slots:[{session:"Electrical Stimulation",cs:"2026-04-16 09:36",ce:"2026-04-16 09:48"}]},
+  {type:"Full-Paper (Talk)",title:"Modeling Perceived Force of Electrical Muscle Stimulation to Improve User's Recall",authors:"Mithil Guruvugari, Romain Nith, Pedro Lopes",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/223327",
+    slots:[{session:"Haptics + XR",cs:"2026-04-14 09:36",ce:"2026-04-14 09:48"}]},
+  {type:"Full-Paper (Talk)",title:"Myo Action: Accelerating Voluntary Actions via Electromyography and Muscle Stimulation",authors:"Yudai Tanaka, Che-Wei Hsu, Bruno Felalaga, Pedro Lopes",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222841",
+    slots:[{session:"Haptic, Touch, and Physical Display",cs:"2026-04-15 11:51",ce:"2026-04-15 12:03"}]},
+  {type:"Full-Paper (Talk)",title:"Next Generation Wearable Haptics Should Balance Virtual & Real-world Fidelity",authors:"Shan-Yuan Teng (National Taiwan University), Yudai Tanaka, Alex Mazursky, Pedro Lopes",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/223104",
+    slots:[{session:"Embodied Interaction and Wearables",cs:"2026-04-15 09:00",ce:"2026-04-15 09:12"}]},
+  {type:"Full-Paper (Talk)",title:"Underreporting of AI Use: The Role of Social Desirability Bias",authors:"Yier Ling, Alex Kale, Alex Imas",pi:"Alex",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/223302",
+    slots:[{session:"AI Risks",cs:"2026-04-14 09:48",ce:"2026-04-14 10:00"}]},
+  {type:"Full-Paper (Talk)",title:"\"Helping Me Versus Doing It for Me\": Designing for Agency in LLM-Infused Writing Tools for Science Journalism",authors:"Sachita Nishal (Northwestern University), Mina Lee, Nicholas Diakopoulos (Northwestern University), Jennifer Wortman Vaughan (Microsoft Research)",pi:"Mina",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/221997",
+    slots:[{session:"Living with AI/LLMs",cs:"2026-04-14 11:27",ce:"2026-04-14 11:39"}]},
+  {type:"Full-Paper (Talk)",title:"Investigating the Effects of LLM Use on Critical Thinking Under Time Constraints: Access Timing and Time Availability",authors:"Jiayin Zhi, Harsh Kumar (University of Toronto), Mina Lee",pi:"Mina",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222766",
+    slots:[{session:"AI Risks",cs:"2026-04-14 10:00",ce:"2026-04-14 10:12"}]},
+  {type:"Full-Paper (Talk)",title:"What Does AI Do for Cultural Interpretation? A Randomized Experiment on Close Reading Poems with Exposure to AI Interpretation",authors:"Jiayin Zhi, Hoyt Long, Richard Jean So (Duke University), Mina Lee",pi:"Mina",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/221938",
+    slots:[{session:"Modeling Minds and Mentalities",cs:"2026-04-17 11:51",ce:"2026-04-17 12:03"}]},
+  {type:"Full-Paper (Talk)",title:"Writing with AI Can Reduce Gender Bias in Hiring Evaluations",authors:"Alicia T.H. Liu, Mina Lee, Xuechunzi Bai",pi:"Mina",award:"Best Paper",url:"https://programs.sigchi.org/chi/2026/program/content/223053",
+    slots:[{session:"Gendered Experiences",cs:"2026-04-13 11:51",ce:"2026-04-13 12:03"}]},
+  {type:"Full-Paper (Talk)",title:"It didn't feel right but I needed a job so desperately: Understanding People's Emotions and Help Needs During Scams",authors:"Jake Chanenson (Google, University of Chicago), Tara Matthews (Google), Sunny Consolvo (Google), Patrick Gage Kelley (Google), Jessica McClearn (Google), Sarah Meiklejohn (Google), Abhishek Roy (Google LLC), Renee Shelby (Google Research), Kurt Thomas (Google), Amelia Hassoun (University of Cambridge, Google)",pi:"Marshini",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222761",
+    slots:[{session:"Scam Experiences",cs:"2026-04-14 09:00",ce:"2026-04-14 09:12"}]},
+
+  // Interactivity Demos (with multiple slots)
+  {type:"Interactivity (Demo)",title:"Demonstrating BloomBeacon: Blooming Physical Touch Display Surfaces via Persistence-of-Vision Motion",authors:"Willa Yunqi Yang, Justice T Andersen, David Dajun Yuan, Ken Nakagaki",pi:"Ken",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/230128",
+    slots:[
+      {session:"Reception and Interactivity Demos",cs:"2026-04-13 18:00",ce:"2026-04-13 19:30"},
+      {session:"Job Fair and Interactivity Demos",  cs:"2026-04-14 16:30",ce:"2026-04-14 18:00"},
+      {session:"Interactivity Demos",               cs:"2026-04-16 16:30",ce:"2026-04-16 18:00"},
+    ]},
+  {type:"Interactivity (Demo)",title:"Demonstrating Eyes-Free Object Retrieval via Fingertip Deflection Guidance Using the NURing",authors:"Tomasz P Trzpit (Northwestern University), Gregory Reardon (Northwestern University), Elizabeth Gerber (Northwestern University), Pedro Lopes, Michael Peshkin (Northwestern University), J. Edward Colgate (Northwestern University)",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/229731",
+    slots:[
+      {session:"Reception and Interactivity Demos", cs:"2026-04-13 18:00",ce:"2026-04-13 19:30"},
+      {session:"Interactivity Demos",               cs:"2026-04-14 14:15",ce:"2026-04-14 15:45"},
+      {session:"Job Fair and Interactivity Demos",  cs:"2026-04-14 16:30",ce:"2026-04-14 18:00"},
+    ]},
+  {type:"Interactivity (Demo)",title:"Demonstrating Myo Action: Accelerating Voluntary Actions via Electromyography and Muscle Stimulation",authors:"Yudai Tanaka, Che-Wei Hsu, Bruno Felalaga, Pedro Lopes",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/229843",
+    slots:[
+      {session:"Reception and Interactivity Demos", cs:"2026-04-13 18:00",ce:"2026-04-13 19:30"},
+      {session:"Interactivity Demos",               cs:"2026-04-14 14:15",ce:"2026-04-14 15:45"},
+      {session:"Job Fair and Interactivity Demos",  cs:"2026-04-14 16:30",ce:"2026-04-14 18:00"},
+    ]},
+  {type:"Interactivity (Demo)",title:"Demonstrating penPal: a Novel Handheld Actuated Drawing Tool for Exploring Texture",authors:"Tucker Rae-Grant, Luke Jimenez, Lea Albaugh (Carnegie Mellon University), Ken Nakagaki",pi:"Ken",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/229781",
+    slots:[
+      {session:"Reception and Interactivity Demos", cs:"2026-04-13 18:00",ce:"2026-04-13 19:30"},
+      {session:"Job Fair and Interactivity Demos",  cs:"2026-04-14 16:30",ce:"2026-04-14 18:00"},
+      {session:"Interactivity Demos",               cs:"2026-04-15 14:15",ce:"2026-04-15 15:45"},
+    ]},
+
+  // Workshops (some with multiple slots)
+  {type:"Workshop",title:"Body Transformation Experiences: A workshop on How to Elicit, Assess and Support them through Multisensory Technology",authors:"Ana Tajadura-Jiménez (Universidad Carlos III de Madrid, University College London), Elena Márquez Segura (Universidad Carlos III de Madrid), Marte Roel Lesur (Universidad Carlos III de Madrid, University of Zurich), Laia Turmo Vidal (KTH Royal Institute of Technology), Frederic Bevilacqua (STMS IRCAM-CNRS-Sorbonne Université), Nadia Berthouze (University College London), Aneesha Singh (University College London), Alice C Haynes (KTH Royal Institute of Technology), Pedro Lopes, Jun Nishida (University of Maryland), Don Samitha Elvitigala (Monash University), Paul Strohmeier (Max Planck Institute for Informatics, Saarland Informatics Campus)",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/214807",
+    slots:[
+      {session:"Body Transformation Experiences",cs:"2026-04-13 14:15",ce:"2026-04-13 15:45"},
+      {session:"Body Transformation Experiences",cs:"2026-04-13 16:30",ce:"2026-04-13 18:00"},
+    ]},
+  {type:"Workshop",title:"Cultivating Pedagogies for Post-Growth HCI",authors:"Vishal Sharma (U. Notre Dame), Hongjin Lin (Harvard), Jasmine Lu, Han Qiao (U. Toronto), Asra Sakeen Wani (IIIT-Delhi), Christina Bremer (Cambridge U.), Philip Engelbutzeder (U. Siegen), Christoph Becker (U. Toronto), Neha Kumar (Georgia Tech), Rikke Hagensby Jensen (Aarhus U.), Anupriya Tuli (KTH)",pi:"",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/214884",
+    slots:[
+      {session:"Cultivating Pedagogies for Post-Growth HCI",cs:"2026-04-15 14:15",ce:"2026-04-15 15:45"},
+      {session:"Cultivating Pedagogies for Post-Growth HCI",cs:"2026-04-15 16:30",ce:"2026-04-15 18:00"},
+    ]},
+  {type:"Workshop",title:"Developmentally Safe Generative AI Environment for Youth",authors:"Jake Chanenson, Yaman Yu (UIUC), Jessica Vitak (U. Maryland), Sheena Erete (U. Maryland), Tamara Clegg (U. Maryland), Diana Freed (Brown U.), Marshini Chetty",pi:"Marshini",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/214797",
+    slots:[
+      {session:"Developmentally Safe Generative AI Environment for Youth",cs:"2026-04-13 14:15",ce:"2026-04-13 15:45"},
+      {session:"Developmentally Safe Generative AI Environment for Youth",cs:"2026-04-13 16:30",ce:"2026-04-13 18:00"},
+    ]},
+  {type:"Workshop",title:"Embodying Relationships: Designing TUIs for Co-Located Human-Human Dynamics",authors:"Ofir Sadka (Technion – Israel Institute of Technology), Iddo Yehoshua Wald (U. Bremen), Andrey Grishko (Reichman U.), Ken Nakagaki, Julia Dominiak (Lodz U. of Technology), Tanja Döring (TU Berlin), Oren Zuckerman (Reichman U.)",pi:"Ken",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/214861",
+    slots:[
+      {session:"Embodying Relationships: TUIs for Human-Human Dynamics",cs:"2026-04-16 14:15",ce:"2026-04-16 15:45"},
+    ]},
+  {type:"Workshop",title:"Sustainable Body Transformation Experiences",authors:"Ana Tajadura-Jiménez (Universidad Carlos III de Madrid, University College London), Elena Márquez Segura (Universidad Carlos III de Madrid), Laia Turmo Vidal (KTH Royal Institute of Technology), Kristina Höök (KTH Royal Institute of Technology), Kristi Kuusk (Estonian Academy of Arts), Pedro Lopes, Mel Slater (University of Barcelona)",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/222201",
+    slots:[
+      {session:"Sustainable Body Transformation Experiences",cs:"2026-04-16 14:15",ce:"2026-04-16 15:45"},
+    ]},
+  {type:"Workshop",title:"Understanding and Engaging Critical Resistance to AI in Education",authors:"Dinesh Ayyappan (UPF), Davinia Hernández-Leo (UPF), Robert Larson (Singapore American School), Leaf Elhai (Learnlife), Julia Chatain (ETH), Grace Li",pi:"",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/214837",
+    slots:[
+      {session:"Understanding and Engaging Critical Resistance to AI in Education",cs:"2026-04-13 14:15",ce:"2026-04-13 15:45"},
+      {session:"Understanding and Engaging Critical Resistance to AI in Education",cs:"2026-04-13 16:30",ce:"2026-04-13 18:00"},
+    ]},
+
+  // Posters (some with multiple slots)
+  {type:"Posters",title:"Camera-Based Closed-Loop Fingertip Deflection Guidance: Pilot Demonstrations in Target Acquisition and Object Retrieval",authors:"Tomasz P Trzpit (Northwestern U.), Gregory Reardon (Northwestern U.), Elizabeth Gerber (Northwestern U.), Pedro Lopes, Michael Peshkin (Northwestern U.), J. Edward Colgate (Northwestern U.)",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/229986",
+    slots:[
+      {session:"Posters (Wednesday)",cs:"2026-04-15 14:15",ce:"2026-04-15 15:45"},
+      {session:"Posters (Wednesday)",cs:"2026-04-15 16:30",ce:"2026-04-15 18:00"},
+    ]},
+
+  {type:"Posters",title:"Understanding the Affordances of Control in AI Reasoning for Human-AI Decision-Making",authors:"Jiwon Moon, Chien-Ming Huang (Johns Hopkins U.), Ziang Xiao (Johns Hopkins U.)",pi:"",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/229979",
+    slots:[
+      {session:"Posters (Monday)",cs:"2026-04-13 14:15",ce:"2026-04-13 15:45"},
+      {session:"Posters (Monday)",cs:"2026-04-13 16:30",ce:"2026-04-13 18:00"},
+    ]},
+
+  // Meet-Up
+  {type:"Meet-Up",title:"NeuroHCI: Integrating Neuroscience and Human-Computer Interaction",authors:"Amber Maimon (University of Bremen, Ben Gurion University of the Negev), Iddo Yehoshua Wald (University of Bremen), Yudai Tanaka, Yun Ho, Jamie A Ward (Goldsmiths University of London), Max L Wilson (University of Nottingham), Kristina Höök (KTH Royal Institute of Technology), Pedro Lopes, Rainer Malaka (University of Bremen)",pi:"Pedro",award:"",url:"https://programs.sigchi.org/chi/2026/program/content/214800",
+    slots:[
+      {session:"NeuroHCI",cs:"2026-04-15 14:15",ce:"2026-04-15 15:45"},
+    ]},
+];
+
+// Pre-parse all slot dates
+raw.forEach(p=>{
+  p.slots.forEach(s=>{ s._s=parseDT(s.cs); s._e=parseDT(s.ce); });
+  // Convenience: primary slot (first), for cards/by-lab
+  p._s = p.slots[0]._s;
+  p._e = p.slots[0]._e;
+});
+
+// Stars
+(()=>{const sf=document.getElementById('starfield');for(let i=0;i<120;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2+.5;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${3+Math.random()*5}s;--delay:${Math.random()*6}s;--max-op:${.1+Math.random()*.45}`;sf.appendChild(s);}})();
+
+// Theme
+const root=document.documentElement;
+document.getElementById('themeToggle').addEventListener('click',()=>{
+  const dark=root.getAttribute('data-theme')!=='dark';
+  root.setAttribute('data-theme',dark?'dark':'light');
+  document.getElementById('toggleLabel').textContent=dark?'Light mode':'Dark mode';
+});
+
+// Stats
+document.getElementById('s-total').textContent=raw.length;
+document.getElementById('s-full').textContent=raw.filter(p=>p.type==="Full-Paper (Talk)").length;
+document.getElementById('s-best').textContent=raw.filter(p=>p.award).length;
+document.getElementById('s-pis').textContent=new Set(raw.map(p=>p.pi).filter(Boolean)).size;
+
+// Filters
+let activePI=null,activeType=null;
+const allPIs=[...new Set(raw.map(p=>p.pi).filter(Boolean))].sort();
+const allTypes=[...new Set(raw.map(p=>p.type))];
+const piFiltersEl=document.getElementById('pi-filters');
+allPIs.forEach(pi=>{
+  const ch=document.createElement('div');ch.className='chip';ch.dataset.pi=pi;
+  ch.innerHTML=`<span class="dot" style="background:${piColorVar[pi]}"></span>${piInfo[pi].short}`;
+  ch.addEventListener('click',()=>{if(activePI===pi){activePI=null;ch.classList.remove('active');}else{piFiltersEl.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));activePI=pi;ch.classList.add('active');}applyFilters();});
+  piFiltersEl.appendChild(ch);
+});
+const typeFiltersEl=document.getElementById('type-filters');
+allTypes.forEach(t=>{
+  const ch=document.createElement('div');ch.className='chip';ch.textContent=typeShort[t]||t;
+  ch.addEventListener('click',()=>{if(activeType===t){activeType=null;ch.classList.remove('active');}else{typeFiltersEl.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));activeType=t;ch.classList.add('active');}applyFilters();});
+  typeFiltersEl.appendChild(ch);
+});
+
+
+function matches(p){
+  if(activePI&&p.pi!==activePI)return false;
+  if(activeType&&p.type!==activeType)return false;
+  return true;
+}
+function applyFilters(){
+  document.querySelectorAll('.card[data-idx]').forEach(el=>el.classList.toggle('hidden',!matches(raw[+el.dataset.idx])));
+  document.querySelectorAll('.pub-row[data-idx]').forEach(el=>el.classList.toggle('hidden',!matches(raw[+el.dataset.idx])));
+  document.querySelectorAll('.sched-row[data-slot-idx]').forEach(el=>el.classList.toggle('hidden',!matches(raw[+el.dataset.paperIdx])));
+  document.querySelectorAll('.session-block').forEach(sb=>{
+    sb.classList.toggle('all-hidden',[...sb.querySelectorAll('.sched-row')].every(r=>r.classList.contains('hidden')));
+  });
+  document.querySelectorAll('.day-block').forEach(db=>{
+    db.classList.toggle('hidden',[...db.querySelectorAll('.session-block')].every(sb=>sb.classList.contains('all-hidden')));
+  });
+  allPIs.forEach(pi=>{const s=document.getElementById('pi-sec-'+pi);if(!s)return;s.classList.toggle('hidden',[...s.querySelectorAll('.pub-row')].every(r=>r.classList.contains('hidden')));});
+}
+
+// Helpers
+function splitAuthors(str){
+  // Split on commas NOT inside parentheses
+  const parts=[];let depth=0,cur='';
+  for(const ch of str){
+    if(ch==='(')depth++;
+    else if(ch===')')depth--;
+    else if(ch===','&&depth===0){parts.push(cur.trim());cur='';continue;}
+    cur+=ch;
+  }
+  if(cur.trim())parts.push(cur.trim());
+  return parts;
+}
+function authorHTML(authors,pi){
+  const cvar=piColorVar[pi]||piColorVar[''];
+  return splitAuthors(authors).map(a=>a.includes('(')?`<span>${a}</span>`:`<span class="uc" style="color:${cvar}">${a}</span>`).join(', ');
+}
+function labTagHTML(pi){
+  if(!pi)return`<div class="lab-tag"><span class="lab-dot" style="background:${piColorVar['']}"></span><span class="lab-pi">UChicago CS</span></div>`;
+  const info=piInfo[pi];const cvar=piColorVar[pi];
+  return`<div class="lab-tag"><span class="lab-dot" style="background:${cvar}"></span><div><div class="lab-name">${info.lab}</div><div class="lab-pi">${info.short}</div></div></div>`;
+}
+
+// ── CARDS ─────────────────────────────────────────────────────────────────────
+function makeCard(p,idx){
+  const cvar=piColorVar[p.pi]||piColorVar[''];
+  const el=document.createElement('div');el.className='card';el.dataset.idx=idx;
+  el.style.setProperty('--pi-color',cvar);
+
+  // Build slots display
+  const multiSlot = p.slots.length > 1;
+  let slotsHTML;
+  if(multiSlot){
+    slotsHTML=`<div class="card-slots">${p.slots.map(s=>{
+      const tr=slotTimeRange(s);
+      return`<div class="slot-chip"><span class="sc-day">${s._s.dayLabel}</span><span>${tr}</span><span style="opacity:.6;font-size:9px">· ${s.session}</span></div>`;
+    }).join('')}</div>`;
+  } else {
+    const s=p.slots[0]; const tr=slotTimeRange(s);
+    slotsHTML=`
+      <div class="card-session"><span class="session-dot">▸</span><span><span style="color:var(--text-muted)">Session:</span> ${s.session}</span></div>
+      ${s._s.dayLabel?`<div class="card-slots"><div class="slot-chip"><span class="sc-day">${s._s.dayLabel}</span><span>${tr}</span></div></div>`:''}`;
+  }
+
+  el.innerHTML=`
+    <div class="card-top">
+      <span class="tag${p.type==='Full-Paper (Talk)'?' tag-full':''}">${typeShort[p.type]||p.type}</span>
+      ${p.award?`<span class="tag tag-award">🏆 ${p.award}</span>`:''}
+    </div>
+    <div class="card-title">${p.title}</div>
+    ${multiSlot?`<div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:4px"><span style="color:var(--text-muted)">Session:</span> ${p.slots[0].session}${p.slots.length>1?' <em style="opacity:.6">(+'+(p.slots.length-1)+' more)</em>':''}</div>`:''}
+    ${slotsHTML}
+    <div class="card-authors">${authorHTML(p.authors,p.pi)}</div>
+    <div class="card-footer">${labTagHTML(p.pi)}<a href="${p.url}" target="_blank" class="card-link">SIGCHI ↗</a></div>`;
+  return el;
+}
+function renderCards(){
+  const g=document.getElementById('cards-grid');
+  const order=[...raw.keys()].sort((a,b)=>(raw[b].award?1:0)-(raw[a].award?1:0));
+  order.forEach(i=>g.appendChild(makeCard(raw[i],i)));
+}
+
+// ── BY LAB ────────────────────────────────────────────────────────────────────
+function renderPIView(){
+  const c=document.getElementById('pi-view');
+  allPIs.forEach(pi=>{
+    const papers=raw.map((p,i)=>({...p,origIdx:i})).filter(p=>p.pi===pi);
+    const cvar=piColorVar[pi];const info=piInfo[pi];
+    const nFull=papers.filter(p=>p.type==="Full-Paper (Talk)").length;
+    const nOther=papers.length-nFull;
+    const nAward=papers.filter(p=>p.award).length;
+    const badgesHTML=[
+      nFull?`<span class="pi-badge is-full">${nFull} Full Paper${nFull>1?'s':''}</span>`:'',
+      nOther?`<span class="pi-badge">${nOther} Other</span>`:'',
+      nAward?`<span class="pi-badge is-award">🏆 Best Paper</span>`:'',
+    ].filter(Boolean).join('');
+    const sec=document.createElement('div');sec.className='pi-section';sec.id='pi-sec-'+pi;
+    sec.innerHTML=`
+      <div class="pi-header">
+        <div class="pi-header-accent" style="background:${cvar}"></div>
+        <div class="pi-header-body">
+          <div>
+            <div class="pi-lab-name"><a href="${info.url}" target="_blank">${info.lab} ↗</a></div>
+            <div class="pi-full-name">${info.full}</div>
+          </div>
+          <div class="pi-badges">${badgesHTML}</div>
+        </div>
+      </div>
+      <div class="pub-table" id="pub-tbl-${pi}"></div>`;
+    c.appendChild(sec);
+    const tbl=document.getElementById('pub-tbl-'+pi);
+    papers.forEach(p=>{
+      const cvar2=piColorVar[p.pi]||piColorVar[''];
+      const row=document.createElement('div');row.className='pub-row';row.dataset.idx=p.origIdx;
+      // Time column: one entry per slot
+      const timeCellHTML=p.slots.map(s=>{
+        const tr=slotTimeRange(s);
+        // If same session name repeats, show just time diff
+        const showSess = p.slots.length>1 && p.slots.some((ss,i)=>i>0&&ss.session!==p.slots[0].session);
+        return`<div class="pub-slot">
+          <span class="pub-slot-day">${s._s.dayLabel}</span>
+          <span class="pub-slot-time">${tr}</span>
+          ${(p.slots.length>1)?`<span class="pub-slot-sess">${s.session}</span>`:''}
+        </div>`;
+      }).join('');
+      row.innerHTML=`
+        <div class="pub-cell pub-col-type">
+          <span class="tag${p.type==='Full-Paper (Talk)'?' tag-full':''}" style="white-space:normal;line-height:1.3">${typeShort[p.type]||p.type}</span>
+        </div>
+        <div class="pub-cell pub-col-main">
+          ${p.award?`<div class="pub-award">🏆 ${p.award}</div>`:''}
+          <div class="pub-title">${p.title}</div>
+          <div class="pub-session-txt"><span style="opacity:.6">Session:</span> ${p.slots[0].session}</div>
+          <div class="pub-authors-txt">${authorHTML(p.authors,p.pi)}</div>
+        </div>
+        <div class="pub-cell pub-col-time">${timeCellHTML}</div>
+        <div class="pub-cell pub-col-link"><a href="${p.url}" target="_blank" class="card-link" style="font-size:10px">SIGCHI ↗</a></div>`;
+      tbl.appendChild(row);
+    });
+  });
+}
+
+// ── SCHEDULE ──────────────────────────────────────────────────────────────────
+function renderSchedule(){
+  const c=document.getElementById('schedule-view');
+
+  // Expand: one entry per (paper × slot)
+  const entries=[];
+  raw.forEach((p,pi)=>{
+    p.slots.forEach((slot,si)=>{
+      entries.push({paper:p,paperIdx:pi,slotIdx:si,slot,_s:slot._s,_e:slot._e});
+    });
+  });
+
+  DAYS.forEach((dk,di)=>{
+    const dayEntries=entries.filter(e=>e._s.dayKey===dk);
+    if(!dayEntries.length)return;
+    dayEntries.sort((a,b)=>a._s.sortMin-b._s.sortMin);
+
+    // Group by session name
+    const sessOrder=[];const sessMap=new Map();
+    dayEntries.forEach(e=>{
+      const key=e.slot.session;
+      if(!sessMap.has(key)){sessMap.set(key,[]);sessOrder.push(key);}
+      sessMap.get(key).push(e);
+    });
+
+    const db=document.createElement('div');db.className='day-block';db.id='day-anchor-'+dk;
+    db.innerHTML=`<div class="day-header"><div class="day-name">${DAY_NAMES[di]}</div><div class="day-date">${DAY_LABELS[di]}</div><div class="day-count">${dayEntries.length} slot${dayEntries.length!==1?'s':''}</div></div><div id="tl-${dk}"></div>`;
+    c.appendChild(db);
+    const tl=document.getElementById('tl-'+dk);
+
+    sessOrder.forEach(sess=>{
+      const sitems=sessMap.get(sess).sort((a,b)=>a._s.sortMin-b._s.sortMin);
+      const sessStart=sitems[0]._s.time;
+      const sessEndMin=sitems.reduce((m,e)=>Math.max(m,e._e.sortMin),0);
+      const sessEndH=Math.floor(sessEndMin/60).toString().padStart(2,'0');
+      const sessEndM=(sessEndMin%60).toString().padStart(2,'0');
+      const sessTimeStr=sessEndMin>0?`${sessStart}–${sessEndH}:${sessEndM}`:sessStart;
+
+      const allFull=sitems.every(e=>e.paper.type==="Full-Paper (Talk)");
+      const sb=document.createElement('div');sb.className='session-block';
+      sb.innerHTML=`
+        <div class="session-head">
+          <span class="session-head-time">${sessTimeStr}</span>
+          <span class="session-head-name${allFull?'':' is-secondary'}">Session: ${sess}</span>
+          <span class="session-head-count">${sitems.length} item${sitems.length>1?'s':''}</span>
+        </div>
+        <div class="session-rows" id="sr-${dk}-${sess.replace(/\W+/g,'_')}"></div>`;
+      tl.appendChild(sb);
+
+      const sr=document.getElementById('sr-'+dk+'-'+sess.replace(/\W+/g,'_'));
+      sitems.forEach(e=>{
+        const p=e.paper;
+        const cvar=piColorVar[p.pi]||piColorVar[''];
+        const tr=slotTimeRange(e.slot);
+        const row=document.createElement('div');row.className='sched-row';
+        row.dataset.paperIdx=e.paperIdx;row.dataset.slotIdx=e.slotIdx;
+        row.innerHTML=`
+          <div class="sched-accent" style="background:${cvar}"></div>
+          <div class="sched-body">
+            <div class="sched-title">${p.title}</div>
+            <div class="sched-meta">
+              ${p.award?`<span class="sched-award">🏆 ${p.award}</span>`:''}
+              ${p.pi?`<span class="mini-pi"><span class="mini-dot" style="background:${cvar}"></span>${piInfo[p.pi].short}</span>`:''}
+              <span class="tag${p.type==='Full-Paper (Talk)'?' tag-full':''}" style="font-size:9px">${typeShort[p.type]||p.type}</span>
+              <a href="${p.url}" target="_blank" class="sched-link">SIGCHI ↗</a>
+            </div>
+          </div>
+          <div class="sched-right">
+            <span class="sched-time-main">${e._s.time}</span>
+            ${e._e.time&&e._e.time!==e._s.time?`<span class="sched-time-end">–${e._e.time}</span>`:''}
+          </div>`;
+        sr.appendChild(row);
+      });
+    });
+  });
+}
+
+// View switching
+let currentView='cards';
+document.querySelectorAll('.view-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const v=btn.dataset.view;if(v===currentView)return;
+    document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+    ['cards-view','pi-view','schedule-view'].forEach(id=>document.getElementById(id).style.display='none');
+    currentView=v;
+    document.getElementById(v+'-view').style.display='block';
+    // Show filters only for cards view
+    document.getElementById('controls').style.display=v==='cards'?'flex':'none';
+  });
+});
+
+renderCards();
+renderPIView();
+renderSchedule();
+
+// Build day-nav after schedule rendered
+(()=>{
+  const nav=document.getElementById('day-nav');
+  DAYS.forEach((dk,di)=>{
+    const anchor=document.getElementById('day-anchor-'+dk);
+    if(!anchor)return;
+    const btn=document.createElement('a');btn.className='day-nav-btn';
+    btn.textContent=DAY_LABELS[di];
+    btn.href='#';
+    btn.addEventListener('click',e=>{e.preventDefault();anchor.scrollIntoView({behavior:'smooth',block:'start'});});
+    nav.appendChild(btn);
+  });
+})();
+</script>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="https://chi2026.acm.org/" target="_blank">ACM CHI 2026</a>
+      <a href="https://programs.sigchi.org/chi/2026" target="_blank">SIGCHI Program</a>
+      <a href="https://cs.uchicago.edu/research/human-computer-interaction/" target="_blank">UChicago HCI Research</a>
+      <a href="https://cs.uchicago.edu/" target="_blank">UChicago CS</a>
+    </div>
+    <div class="footer-meta">
+      <p class="footer-credit">Created by <a href="https://www.axlab.cs.uchicago.edu/" target="_blank">Ken Nakagaki</a> with <a href="https://claude.ai/code" target="_blank">Claude Code</a></p>
+      <p class="footer-disclaimer">ℹ️ Information sourced from the <a href="https://programs.sigchi.org/chi/2026" target="_blank">SIGCHI 2026 Program</a>. Some details may be incomplete or subject to change — please refer to the official program for the most up-to-date information.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+footer {
+  position: relative; z-index: 10;
+  border-top: 1px solid var(--border);
+  padding: 28px 48px;
+  background: var(--bg-card);
+  transition: background .3s;
+}
+.footer-inner { display: flex; flex-direction: column; gap: 14px; }
+.footer-links {
+  display: flex; gap: 20px; flex-wrap: wrap;
+}
+.footer-links a {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  color: var(--text-muted); text-decoration: none;
+  transition: color .15s;
+}
+.footer-links a:hover { color: var(--text); }
+.footer-meta { display: flex; flex-direction: column; gap: 6px; }
+.footer-credit {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  color: var(--text-muted);
+}
+.footer-credit a { color: var(--accent); text-decoration: none; }
+.footer-credit a:hover { text-decoration: underline; }
+.footer-disclaimer {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  color: var(--text-muted); line-height: 1.6; max-width: 680px;
+  opacity: .75;
+}
+.footer-disclaimer a { color: inherit; text-decoration: underline; }
+.footer-disclaimer a:hover { opacity: 1; color: var(--text); }
+@media(max-width:700px){ footer { padding: 24px 20px; } }
+</style>
+</body>
+</html>
